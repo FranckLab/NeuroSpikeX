@@ -1,7 +1,7 @@
 function [MatchedCells, cellMatchesFig] = matchCells(folderpath, image1_folder, image2_folder, tform, label1, label2)
 
 % Function to match the cells identified by NeuroCa between multiple
-% timepoints for one sample (currently written for 4 timepoints)
+% timepoints for one sample (currently written for 2 timepoints)
 
 % This function is for the RelativeBaselineChangeApp
 
@@ -32,7 +32,13 @@ centroids2 = importdata([folderpath,image2_folder,'\center.mat']);
 radii2 = importdata([folderpath,image2_folder,'\radii.mat']);
 fdata2 = importdata([folderpath,image2_folder,'\fdata.mat']);
 image1 = im2double(imread([folderpath,image1_folder,'\beforeraw.tif']));
-image2 = im2double(imread([folderpath,image2_folder,'\afterraw.tif']));
+if endsWith(image2_folder, '0plus', 'IgnoreCase', true)
+    image2 = im2double(imread(fullfile(folderpath, image2_folder, 'afterraw.tif')));
+else
+    image2 = im2double(imread(fullfile(folderpath, image2_folder, 'firstimage.tif')));
+    lims = stretchlim(image2, [0.01 0.99]);
+    image2 = imadjust(image2, lims, [0 1]);
+end
 
 %% Create transform matrices by manually matching point between the 0minus image and all other timepoints
 if isempty(tform)
