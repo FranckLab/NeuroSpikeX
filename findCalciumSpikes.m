@@ -1,4 +1,4 @@
-function [Calcium_Transients] = findCalciumSpikes(signal_info, smooth_signal, signal_strength_threshold, useBounds, minBound, maxBound, prm)
+function [Calcium_Transients] = findCalciumSpikes(signal_info, fdata, smooth_signal, signal_strength_threshold, useBounds, minBound, maxBound, prm)
 
 %% Function to identify the peak of true calcium spikes and find the end of the signal decay
 %
@@ -82,7 +82,11 @@ for cell = 1:size(smooth_signal,1)
 end
 
 % Store the identified inactive cells in the output structure
-Calcium_Transients.inactive_cells = inactive_cells;
+if exist("inactive_cells",'var')
+    Calcium_Transients.inactive_cells = inactive_cells;
+else
+    Calcium_Transients.inactive_cells = [];
+end
 
 % In the case where no calcium transients are identified in the entire
 % network, exit the function
@@ -108,8 +112,9 @@ for a = 1:size(initial_active_cells,1)
 
     cell = initial_active_cells(a,1); % the cell # (a.k.a. the row in smooth_signal)
    
-    all_pks = []; all_locs = []; % reset vector for each cell
+    all_pks = []; all_locs = []; all_raw_pks = []; % reset vector for each cell
     [all_pks,all_locs] = findpeaks(smooth_signal(cell,:),'MinPeakProminence',prm);
+    all_raw_pks = fdata(cell, all_locs);
    
     if isempty(all_pks)
         % Add a new cell to the inactive list created in above section
@@ -138,7 +143,7 @@ for a = 1:size(initial_active_cells,1)
         % Run through each peak identified
         for i = 1:length(all_pks)
             if all_pks(i) < peak_cutoff
-                true_pks(i_active,k) = all_pks(i);
+                true_pks(i_active,k) = all_raw_pks(i);
                 pk_locs(i_active,k) = all_locs(i);
                 k = k + 1;
             else
