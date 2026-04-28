@@ -1,4 +1,4 @@
-function [Calcium_Transients] = findCalciumSpikes(signal_info, fdata, smooth_signal, signal_strength_threshold, useBounds, minBound, maxBound, prm)
+function [Calcium_Transients] = findCalciumSpikes(signal_info, smooth_signal, signal_strength_threshold, useBounds, minBound, maxBound, prm)
 
 %% Function to identify the peak of true calcium spikes and find the end of the signal decay
 %
@@ -37,9 +37,10 @@ end
 
 frame_rate = signal_info.fps;
 time_axis = signal_info.time;
+fdata = signal_info.fdata;
 
 %% USE CERTAIN CRITERIA TO IDENTIFY THE CELL AS ACTIVE (HAVING TRUE CALCIUM SPIKES) OR INACTIVE (NOISE)
-
+s
 active_count = 0;
 inactive_count = 0;
 initial_active_cells = [];
